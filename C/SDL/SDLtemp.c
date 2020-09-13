@@ -1,116 +1,59 @@
-//Using SDL and standard IO
-#include <SDL.h>
+#include <stdlib.h>
 #include <stdio.h>
-
-//Screen dimension constants
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
-
-//Starts up SDL and creates window
-int init();
-
-//Loads media
-int loadMedia();
-
-//Frees media and shuts down SDL
-void close();
-
-//The window we'll be rendering to
-SDL_Window* gWindow = NULL;
-    
-//The surface contained by the window
-SDL_Surface* gScreenSurface = NULL;
-
-//The image we will load and show on the screen
-SDL_Surface* gHelloWorld = NULL;
-
-int init()
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h> /* Inclusion du header de SDL_image (adapter le dossier au besoin) */
+ 
+void pause();
+ 
+int main(int argc, char *argv[])
 {
-    //Initialization flag
-    int success = 1;
+    SDL_Window* gWindow = NULL;
+    SDL_Surface *ecran = NULL, *imageDeFond = NULL, *sapin = NULL;
+    SDL_Rect positionFond, positionSapin;
+ 
+    positionFond.x = 0;
+    positionFond.y = 0;
+    positionSapin.x = 500;
+    positionSapin.y = 260;
+ 
+    SDL_Init(SDL_INIT_VIDEO);
+ 
+    gWindow = SDL_CreateWindow( "SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, SDL_WINDOW_SHOWN );
 
-    //Initialize SDL
-    if( SDL_Init( SDL_INIT_VIDEO ) < 0 )
-    {
-        printf( "SDL could not initialize! SDL_Error: %s\n", SDL_GetError() );
-        success = 0;
-    }
-    else
-    {
-        //Create window
-        gWindow = SDL_CreateWindow( "SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
-        if( gWindow == NULL )
-        {
-            printf( "Window could not be created! SDL_Error: %s\n", SDL_GetError() );
-            success = 0;
-        }
-        else
-        {
-            //Get window surface
-            gScreenSurface = SDL_GetWindowSurface( gWindow );
-        }
-    }
-
-    return success;
-}
-
-int loadMedia()
-{
-    //Loading success flag
-    int success = 1;
-
-    //Load splash image
-    gHelloWorld = SDL_LoadBMP( "hello_world.bmp" );
-    if( gHelloWorld == NULL )
-    {
-        printf( "Unable to load image %s! SDL Error: %s\n", "hello_world.bmp", SDL_GetError() );
-        success = 0;
-    }
-
-    return success;
-}
-
-void close()
-{
-    //Deallocate surface
-    SDL_FreeSurface( gHelloWorld );
-    gHelloWorld = NULL;
-
-    //Destroy window
+    ecran = SDL_GetWindowSurface( gWindow );
+ 
+    imageDeFond = IMG_Load("lac_en_montagne.bmp");
+    SDL_BlitSurface(imageDeFond, NULL, ecran, &positionFond);
+ 
+    /* Chargement d'un PNG avec IMG_Load
+    Celui-ci est automatiquement rendu transparent car les informations de
+    transparence sont codées à l'intérieur du fichier PNG */
+    sapin = IMG_Load("sapin.png");
+    SDL_BlitSurface(sapin, NULL, ecran, &positionSapin);
+ 
+    SDL_UpdateWindowSurface( gWindow );
+    pause();
+ 
+    SDL_FreeSurface(imageDeFond);
+    SDL_FreeSurface(sapin);
     SDL_DestroyWindow( gWindow );
-    gWindow = NULL;
-
-    //Quit SDL subsystems
     SDL_Quit();
+ 
+    return EXIT_SUCCESS;
 }
-
-int main( int argc, char* args[] )
+ 
+void pause()
 {
-    //Start up SDL and create window
-    if( !init() )
+    int continuer = 1;
+    SDL_Event event;
+ 
+    while (continuer)
     {
-        printf( "Failed to initialize!\n" );
-    }
-    else
-    {
-        //Load media
-        if( !loadMedia() )
+        SDL_WaitEvent(&event);
+        switch(event.type)
         {
-            printf( "Failed to load media!\n" );
-        }
-        else
-        {
-            //Apply the image
-            SDL_BlitSurface( gHelloWorld, NULL, gScreenSurface, NULL );
-            //Update the surface
-            SDL_UpdateWindowSurface( gWindow );
-            //Wait two seconds
-            SDL_Delay( 2000 );
+            case SDL_QUIT:
+                continuer = 0;
         }
     }
-
-    //Free resources and close SDL
-    close();
-
-    return 0;
 }

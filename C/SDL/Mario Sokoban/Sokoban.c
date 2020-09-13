@@ -22,18 +22,8 @@ int init( SDL_Window *window, SDL_Surface *screen )
         }
         else
         {
-            //Initialize JPG loading
-            int imgFlags = IMG_INIT_JPG;
-            if( !( IMG_Init( imgFlags ) & imgFlags ) )
-            {
-                printf( "SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError() );
-                success = 0;
-            }
-            else
-            {
-                //Get window surface
-                screen = SDL_GetWindowSurface( window );
-            }
+            //Get window surface
+            screen = SDL_GetWindowSurface( window );
         }
     }
 
@@ -52,4 +42,22 @@ int loadMedia( SDL_Surface *menu )
     }
 
     return success;
+}
+
+void closed( SDL_Window *window, SDL_Surface *screen, SDL_Surface *menu )
+{
+    //Free loaded image
+	SDL_FreeSurface( menu );
+	menu = NULL;
+
+	//Free loaded image
+	SDL_FreeSurface( screen );
+	screen = NULL;
+
+	//Destroy window
+	SDL_DestroyWindow( window );
+	window = NULL;
+
+	//Quit SDL subsystems
+	SDL_Quit();
 }
