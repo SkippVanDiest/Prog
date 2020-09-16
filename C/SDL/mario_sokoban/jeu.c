@@ -55,36 +55,36 @@ void jouer(SDL_Surface* ecran, SDL_Window* fenetre)
     while (continuer)
     {
         SDL_WaitEvent(&event);
-switch(event.type)
-{
-    case SDL_QUIT:
-        continuer = 0;
-        break;
-    case SDL_KEYDOWN:
-        switch(event.key.keysym.sym)
-        {
-            case SDLK_ESCAPE:
-                continuer = 0;
-                break;
-            case SDLK_UP:
-                marioActuel = mario[HAUT];
-                deplacerJoueur(carte, &positionJoueur, HAUT);
-                break;
-            case SDLK_DOWN:
-                marioActuel = mario[BAS];
-                deplacerJoueur(carte, &positionJoueur, BAS);
-                break;
-            case SDLK_RIGHT:
-                marioActuel = mario[DROITE];
-                deplacerJoueur(carte, &positionJoueur, DROITE);
-                break;
-            case SDLK_LEFT:
-                marioActuel = mario[GAUCHE];
-                deplacerJoueur(carte, &positionJoueur, GAUCHE);
-                break;
-        }
-        break;
-}
+    switch(event.type)
+    {
+        case SDL_QUIT:
+            continuer = 0;
+            break;
+        case SDL_KEYDOWN:
+            switch(event.key.keysym.sym)
+            {
+                case SDLK_ESCAPE:
+                    continuer = 0;
+                    break;
+                case SDLK_UP:
+                    marioActuel = mario[HAUT];
+                    deplacerJoueur(carte, &positionJoueur, HAUT);
+                    break;
+                case SDLK_DOWN:
+                    marioActuel = mario[BAS];
+                    deplacerJoueur(carte, &positionJoueur, BAS);
+                    break;
+                case SDLK_RIGHT:
+                    marioActuel = mario[DROITE];
+                    deplacerJoueur(carte, &positionJoueur, DROITE);
+                    break;
+                case SDLK_LEFT:
+                    marioActuel = mario[GAUCHE];
+                    deplacerJoueur(carte, &positionJoueur, GAUCHE);
+                    break;
+            }
+            break;
+    }
 
         // Effacement de l'�cran
         SDL_FillRect(ecran, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
