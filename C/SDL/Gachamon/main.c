@@ -14,9 +14,10 @@
 
 int main(int argc, char **argv)
 {
-    SDL_Window *window = NULL;
-    SDL_Surface *screen = NULL;
-    SDL_Surface *menu = NULL;
+    SDL_Window* window = NULL;
+    SDL_Renderer* renderer = NULL;
+    SDL_Texture* screen = NULL;
+    SDL_Surface* menu = NULL;
 
     //Initialization flag
     int success = 1;
@@ -36,55 +37,78 @@ int main(int argc, char **argv)
         }
         else
         {
-            //Get window surface
-            screen = SDL_GetWindowSurface(window);
-
-            //Load menu surface
-            menu = IMG_Load("images/menu.jpg");
-            if( menu == NULL )
+            //Create renderer for window
+            renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+            if (renderer == NULL)
             {
-                printf("Failed to load menu image! SDL Error: %s\n", SDL_GetError());
+                printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
             }
             else
-            {	
-                //Main loop flag
-                int quit = 0;
-
-                //Event handler
-                SDL_Event event;
-
-                //While application is running
-                while(!quit)
+            {
+                //Load image at specified path
+                SDL_Surface* loadedSurface = IMG_Load("images/menu.jpg");
+                if( loadedSurface == NULL )
                 {
-                    //Handle incoming event
-                    SDL_WaitEvent(&event);
-
-                    switch(event.type)
+                    printf("Unable to load image %s! SDL Error: %s\n", "images/menu.jpg", SDL_GetError());
+                }
+                else
+                {	
+                    //Create texture from surface pixels
+                    screen = SDL_CreateTextureFromSurface(renderer, loadedSurface);
+                    if (screen == NULL)
                     {
-                        //User requests quit
-                        case SDL_QUIT:
-                            quit = 1;
-                            break;
+                        printf("Unable to create texture from %s! SDL Error: %s\n", "images/menu.jpg", SDL_GetError());
+
+                        //Get rid of old loaded surface
+                        SDL_FreeSurface(loadedSurface);
                     }
+                    else
+                    {   
+                        //Get rid of old loaded surface
+                        SDL_FreeSurface(loadedSurface);
 
-                    //Apply the current image
-                    SDL_BlitSurface(menu, NULL, screen, NULL);
+                        //Main loop flag
+                        int quit = 0;
 
-                    //Update the surface
-                    SDL_UpdateWindowSurface(window);
+                        //Event handler
+                        SDL_Event event;
+
+                        //While application is running
+                        while(!quit)
+                        {
+                            //Handle incoming event
+                            SDL_WaitEvent(&event);
+
+                            switch(event.type)
+                            {
+                                //User requests quit
+                                case SDL_QUIT:
+                                    quit = 1;
+                                    break;
+                            }
+
+                            //Clear screen
+                            SDL_RenderClear(renderer);
+
+                            //Render texture to screen
+                            SDL_RenderCopy(renderer, screen, NULL, NULL);
+
+                            //Update screen
+                            SDL_RenderPresent(renderer);
+                        }
+                    }
                 }
             }
         }
     }
-    //Deallocate surfaces
-    SDL_FreeSurface(menu);
-    menu = NULL;
-
-    SDL_FreeSurface(screen);
+    //Free loaded image
+    SDL_DestroyTexture(screen);
     screen = NULL;
 
 	//Destroy window
+    SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow( window );
+    renderer = NULL;
 	window = NULL;
 
 	//Quit SDL subsystems
