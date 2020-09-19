@@ -3,10 +3,11 @@
 */
 
 //Inluding libraries
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
 //Defining screen dimensions
 #define WINDOW_WIDTH    1280
@@ -14,10 +15,20 @@
 
 int main(int argc, char **argv)
 {
-    SDL_Window* window = NULL;
-    SDL_Renderer* renderer = NULL;
-    SDL_Texture* screen = NULL;
-    SDL_Surface* menu = NULL;
+    SDL_Window *window = NULL;
+    SDL_Surface *screen = NULL, *menu = NULL, *texte = NULL;
+    SDL_Rect position;
+    TTF_Font *police = NULL;
+    SDL_Color couleurJaune = {255, 255, 0};
+
+    /* Chargement de la police */
+    police = TTF_OpenFont("Pokemon_Solid.ttf", 106);
+
+    /* Écriture du texte dans la SDL_Surface texte en mode Blended (optimal) */
+    texte = TTF_RenderText_Blended(police, "Pokéfion", couleurJaune);
+
+    position.x = 0;
+    position.y = 0;
 
     //Initialization flag
     int success = 1;
@@ -29,49 +40,50 @@ int main(int argc, char **argv)
     }
     else
     {
-        //Create window
-        window = SDL_CreateWindow("Gachamon", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
-        if(window == NULL)
+        if(TTF_Init() == -1)
         {
-            printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
+            fprintf(stderr, "Erreur d'initialisation de TTF_Init : %s\n", TTF_GetError());
         }
         else
         {
-            //Create renderer for window
-            renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-            if (renderer == NULL)
+            //Create window
+            window = SDL_CreateWindow("Gachamon", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
+            if(window == NULL)
             {
-                printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
+                printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
             }
             else
             {
-                //Load image at specified path
-                SDL_Surface* loadedSurface = IMG_Load("images/menu.jpg");
-                if( loadedSurface == NULL )
+                //Get window surface
+                screen = SDL_GetWindowSurface(window);
+                if (screen == NULL)
                 {
-                    printf("Unable to load image %s! SDL Error: %s\n", "images/menu.jpg", SDL_GetError());
+                    printf("Get window surface error! SDL Error: %s\n", SDL_GetError());
                 }
                 else
-                {	
-                    //Create texture from surface pixels
-                    screen = SDL_CreateTextureFromSurface(renderer, loadedSurface);
-                    if (screen == NULL)
+                {
+                    //Load image at specified path
+                    menu = IMG_Load("images/menu.jpg");
+                    if( menu == NULL )
                     {
-                        printf("Unable to create texture from %s! SDL Error: %s\n", "images/menu.jpg", SDL_GetError());
-
-                        //Get rid of old loaded surface
-                        SDL_FreeSurface(loadedSurface);
+                        printf("Unable to load menu image! SDL Error: %s\n", SDL_GetError());
                     }
                     else
-                    {   
-                        //Get rid of old loaded surface
-                        SDL_FreeSurface(loadedSurface);
-
+                    {	
                         //Main loop flag
                         int quit = 0;
 
                         //Event handler
                         SDL_Event event;
+
+                        /* Chargement de la police */
+                        police = TTF_OpenFont("Pokemon_Solid.ttf", 116);
+
+                        /* Écriture du texte dans la SDL_Surface texte en mode Blended (optimal) */
+                        texte = TTF_RenderText_Blended(police, "Pokefion", couleurJaune);
+
+                        position.x = (screen->w/2)-(texte->w/2);
+                        position.y = 100;
 
                         //While application is running
                         while(!quit)
@@ -87,31 +99,37 @@ int main(int argc, char **argv)
                                     break;
                             }
 
-                            //Clear screen
-                            SDL_RenderClear(renderer);
+                            //Apply the current image
+                            SDL_BlitSurface(menu, NULL, screen, NULL);
 
-                            //Render texture to screen
-                            SDL_RenderCopy(renderer, screen, NULL, NULL);
+                            SDL_BlitSurface(texte, NULL, screen, &position);
 
                             //Update screen
-                            SDL_RenderPresent(renderer);
+                            SDL_UpdateWindowSurface(window);
                         }
                     }
                 }
             }
         }
     }
+    TTF_CloseFont(police);
+
+	//Quit SDL subsystems
+    TTF_Quit();
     //Free loaded image
-    SDL_DestroyTexture(screen);
+    SDL_FreeSurface(texte);
+    texte = NULL;
+    
+    SDL_FreeSurface(menu);
+    menu = NULL;
+
+    SDL_FreeSurface(screen);
     screen = NULL;
 
 	//Destroy window
-    SDL_DestroyRenderer(renderer);
-	SDL_DestroyWindow( window );
-    renderer = NULL;
+	SDL_DestroyWindow(window);
 	window = NULL;
 
-	//Quit SDL subsystems
 	SDL_Quit();
 
     return EXIT_SUCCESS;
