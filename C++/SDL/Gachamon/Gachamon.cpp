@@ -26,7 +26,7 @@ bool init( SDL_Window* gWindow, SDL_Renderer* &gRenderer )
 		}
 
 		//Create window
-		gWindow = SDL_CreateWindow( "SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
+		gWindow = SDL_CreateWindow( "Gachamon", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
 		if( gWindow == NULL )
 		{
 			printf( "Window could not be created! SDL Error: %s\n", SDL_GetError() );
@@ -172,5 +172,9 @@ void loadGame( SDL_Renderer* gRenderer, SDL_Texture* loading, SDL_Event e )
 		loadingBar.w += 40;
 	}
 
-	SDL_Delay(1000);
+	if (!quitGame)
+	{
+		SDL_Delay(1000);
+	}
+	
 }
