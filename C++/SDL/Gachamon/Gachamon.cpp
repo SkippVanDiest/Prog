@@ -135,10 +135,12 @@ SDL_Texture* loadTexture( SDL_Renderer* gRenderer, std::string path )
 
 void loadGame( SDL_Renderer* gRenderer, SDL_Texture* loading, SDL_Event e )
 {
+	SDL_Rect loadingBar = {240, 650, 0, 30};
+
 	bool quitGame = false;
 
 	//While application is running
-	while( !quitGame )
+	while( !quitGame && loadingBar.w <= 800)
 	{
 		//Handle events on queue
 		while( SDL_PollEvent( &e ) != 0 )
@@ -152,13 +154,23 @@ void loadGame( SDL_Renderer* gRenderer, SDL_Texture* loading, SDL_Event e )
 			}
 		}
 
+		SDL_SetRenderDrawColor( gRenderer, 80, 80, 80, SDL_ALPHA_OPAQUE);
+
 		//Clear screen
 		SDL_RenderClear( gRenderer );
 
 		//Render texture to screen
 		SDL_RenderCopy( gRenderer, loading, NULL, NULL );
 
+		SDL_RenderFillRect( gRenderer, &loadingBar );
+
 		//Update screen
 		SDL_RenderPresent( gRenderer );
+
+		SDL_Delay(200);
+
+		loadingBar.w += 40;
 	}
+
+	SDL_Delay(1000);
 }
