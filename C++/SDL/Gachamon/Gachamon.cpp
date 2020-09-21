@@ -6,7 +6,7 @@
 
 #include "Gachamon.h"
 
-bool init( SDL_Window* gWindow, SDL_Renderer* gRenderer )
+bool init( SDL_Window* gWindow, SDL_Renderer* &gRenderer )
 {
 	//Initialization flag
 	bool success = true;
@@ -60,27 +60,40 @@ bool init( SDL_Window* gWindow, SDL_Renderer* gRenderer )
 	return success;
 }
 
-bool loadMedia( SDL_Renderer* gRenderer, SDL_Texture* gTexture )
+bool loadMedia( SDL_Renderer* gRenderer, SDL_Texture* &menu, SDL_Texture* &loading )
 {
 	//Loading success flag
 	bool success = true;
 
-	//Load PNG texture
-	gTexture = loadTexture( gRenderer, "images/screen1.jpg" );
-	if( gTexture == NULL )
+	//Load menu texture
+	menu = loadTexture( gRenderer, "images/screen1.jpg" );
+	if( menu == NULL )
 	{
-		printf( "Failed to load texture image!\n" );
+		printf( "Failed to load menu image!\n" );
 		success = false;
 	}
+
+	//Load loading texture
+	loading = loadTexture( gRenderer, "images/loadingScreen1.jpg" );
+	if( loading == NULL )
+	{
+		printf( "Failed to load loading image!\n" );
+		success = false;
+	}
+
 
 	return success;
 }
 
-void close( SDL_Window* gWindow, SDL_Renderer* gRenderer, SDL_Texture* gTexture )
+void close( SDL_Window* gWindow, SDL_Renderer* gRenderer, SDL_Texture* menu, SDL_Texture* loading )
 {
 	//Free loaded image
-	SDL_DestroyTexture( gTexture );
-	gTexture = NULL;
+	SDL_DestroyTexture( loading );
+	loading = NULL;
+
+	//Free loaded image
+	SDL_DestroyTexture( menu );
+	menu = NULL;
 
 	//Destroy window	
 	SDL_DestroyRenderer( gRenderer );
@@ -118,4 +131,34 @@ SDL_Texture* loadTexture( SDL_Renderer* gRenderer, std::string path )
 	}
 
 	return newTexture;
+}
+
+void loadGame( SDL_Renderer* gRenderer, SDL_Texture* loading, SDL_Event e )
+{
+	bool quitGame = false;
+
+	//While application is running
+	while( !quitGame )
+	{
+		//Handle events on queue
+		while( SDL_PollEvent( &e ) != 0 )
+		{
+			switch (e.type)
+			{
+				//User requests quit
+				case SDL_QUIT:
+					quitGame = true;
+					break;
+			}
+		}
+
+		//Clear screen
+		SDL_RenderClear( gRenderer );
+
+		//Render texture to screen
+		SDL_RenderCopy( gRenderer, loading, NULL, NULL );
+
+		//Update screen
+		SDL_RenderPresent( gRenderer );
+	}
 }

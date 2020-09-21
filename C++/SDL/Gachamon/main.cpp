@@ -15,8 +15,11 @@ int main(int argc, char** argv)
     //The window renderer
     SDL_Renderer* gRenderer = NULL;
 
-    //Current displayed texture
-    SDL_Texture* gTexture = NULL;
+    //Menu texture
+    SDL_Texture* menu = NULL;
+
+	//Laoding texture
+    SDL_Texture* loading = NULL;
 
 	//Start up SDL and create gWindow
 	if( !init( gWindow, gRenderer ) )
@@ -24,14 +27,14 @@ int main(int argc, char** argv)
 		printf( "Failed to initialize!\n" );
 	}
 	else
-	{
+	{	
 		//Load media
-		if( !loadMedia( gRenderer, gTexture ) )
+		if( !loadMedia( gRenderer, menu, loading ) )
 		{
 			printf( "Failed to load media!\n" );
 		}
 		else
-		{	
+		{		
 			//Main loop flag
 			bool quit = false;
 
@@ -44,10 +47,18 @@ int main(int argc, char** argv)
 				//Handle events on queue
 				while( SDL_PollEvent( &e ) != 0 )
 				{
-					//User requests quit
-					if( e.type == SDL_QUIT )
+					switch (e.type)
 					{
-						quit = true;
+						//User requests quit
+						case SDL_QUIT:
+							quit = true;
+							break;
+						case SDL_MOUSEBUTTONDOWN:
+							if (e.button.button == SDL_BUTTON_LEFT)
+							{
+								loadGame( gRenderer, loading, e);
+							}
+						break;
 					}
 				}
 
@@ -55,7 +66,7 @@ int main(int argc, char** argv)
 				SDL_RenderClear( gRenderer );
 
 				//Render texture to screen
-				SDL_RenderCopy( gRenderer, gTexture, NULL, NULL );
+				SDL_RenderCopy( gRenderer, menu, NULL, NULL );
 
 				//Update screen
 				SDL_RenderPresent( gRenderer );
@@ -64,7 +75,7 @@ int main(int argc, char** argv)
 	}
 
 	//Free resources and close SDL
-	close( gWindow, gRenderer, gTexture);
+	close( gWindow, gRenderer, menu, loading);
 
 	return 0;
 }
