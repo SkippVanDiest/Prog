@@ -6,6 +6,91 @@
 
 #include "Gachamon.h"
 
+
+LTexture::LTexture()
+{
+	//Initialize
+	mTexture = NULL;
+	mWidth = 0;
+	mHeight = 0;
+}
+
+LTexture::~LTexture()
+{
+	//Deallocate
+	free();
+}
+
+bool LTexture::loadFromFile(SDL_Renderer* gRenderer, std::string path )
+{
+	//Get rid of preexisting texture
+	free();
+
+	//The final texture
+	SDL_Texture* newTexture = NULL;
+
+	//Load image at specified path
+	SDL_Surface* loadedSurface = IMG_Load( path.c_str() );
+	if( loadedSurface == NULL )
+	{
+		printf( "Unable to load image %s! SDL_image Error: %s\n", path.c_str(), IMG_GetError() );
+	}
+	else
+	{
+		//Color key image
+		SDL_SetColorKey( loadedSurface, SDL_TRUE, SDL_MapRGB( loadedSurface->format, 0, 0xFF, 0xFF ) );
+
+		//Create texture from surface pixels
+        newTexture = SDL_CreateTextureFromSurface( gRenderer, loadedSurface );
+		if( newTexture == NULL )
+		{
+			printf( "Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError() );
+		}
+		else
+		{
+			//Get image dimensions
+			mWidth = loadedSurface->w;
+			mHeight = loadedSurface->h;
+		}
+
+		//Get rid of old loaded surface
+		SDL_FreeSurface( loadedSurface );
+	}
+
+	//Return success
+	mTexture = newTexture;
+	return mTexture != NULL;
+}
+
+void LTexture::free()
+{
+	//Free texture if it exists
+	if( mTexture != NULL )
+	{
+		SDL_DestroyTexture( mTexture );
+		mTexture = NULL;
+		mWidth = 0;
+		mHeight = 0;
+	}
+}
+
+void LTexture::render( SDL_Renderer* gRenderer, int x, int y )
+{
+	//Set rendering space and render to screen
+	SDL_Rect renderQuad = { x, y, mWidth, mHeight };
+	SDL_RenderCopy( gRenderer, mTexture, NULL, &renderQuad );
+}
+
+int LTexture::getWidth()
+{
+	return mWidth;
+}
+
+int LTexture::getHeight()
+{
+	return mHeight;
+}
+
 bool init( SDL_Window* gWindow, SDL_Renderer* &gRenderer )
 {
 	//Initialization flag
@@ -60,40 +145,33 @@ bool init( SDL_Window* gWindow, SDL_Renderer* &gRenderer )
 	return success;
 }
 
-bool loadMedia( SDL_Renderer* gRenderer, SDL_Texture* &menu, SDL_Texture* &loading )
+bool loadMedia( SDL_Renderer* gRenderer, LTexture &menu, LTexture &loading )
 {
 	//Loading success flag
 	bool success = true;
 
 	//Load menu texture
-	menu = loadTexture( gRenderer, "images/screen1.jpg" );
-	if( menu == NULL )
+	if( !menu.loadFromFile( gRenderer, "images/screen1.jpg" ) )
 	{
-		printf( "Failed to load menu image!\n" );
+		printf( "Failed to load menu texture image!\n" );
 		success = false;
 	}
 
 	//Load loading texture
-	loading = loadTexture( gRenderer, "images/loadingScreen1.jpg" );
-	if( loading == NULL )
+	if( !loading.loadFromFile( gRenderer, "images/loadingScreen1.jpg" ) )
 	{
-		printf( "Failed to load loading image!\n" );
+		printf( "Failed to load loading texture image!\n" );
 		success = false;
 	}
-
 
 	return success;
 }
 
-void close( SDL_Window* gWindow, SDL_Renderer* gRenderer, SDL_Texture* menu, SDL_Texture* loading )
+void close( SDL_Window* gWindow, SDL_Renderer* gRenderer, LTexture menu, LTexture loading )
 {
-	//Free loaded image
-	SDL_DestroyTexture( loading );
-	loading = NULL;
-
-	//Free loaded image
-	SDL_DestroyTexture( menu );
-	menu = NULL;
+	//Free loaded images
+	loading.free();
+	menu.free();
 
 	//Destroy window	
 	SDL_DestroyRenderer( gRenderer );
@@ -106,34 +184,7 @@ void close( SDL_Window* gWindow, SDL_Renderer* gRenderer, SDL_Texture* menu, SDL
 	SDL_Quit();
 }
 
-SDL_Texture* loadTexture( SDL_Renderer* gRenderer, std::string path )
-{
-	//The final texture
-	SDL_Texture* newTexture = NULL;
-
-	//Load image at specified path
-	SDL_Surface* loadedSurface = IMG_Load( path.c_str() );
-	if( loadedSurface == NULL )
-	{
-		printf( "Unable to load image %s! SDL_image Error: %s\n", path.c_str(), IMG_GetError() );
-	}
-	else
-	{
-		//Create texture from surface pixels
-        newTexture = SDL_CreateTextureFromSurface( gRenderer, loadedSurface );
-		if( newTexture == NULL )
-		{
-			printf( "Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError() );
-		}
-
-		//Get rid of old loaded surface
-		SDL_FreeSurface( loadedSurface );
-	}
-
-	return newTexture;
-}
-
-void loadGame( SDL_Renderer* gRenderer, SDL_Texture* loading, SDL_Event e )
+void loadGame( SDL_Renderer* gRenderer, LTexture &loading, SDL_Event e )
 {
 	SDL_Rect loadingBar = {240, 650, 0, 30};
 
@@ -154,13 +205,21 @@ void loadGame( SDL_Renderer* gRenderer, SDL_Texture* loading, SDL_Event e )
 			}
 		}
 
-		SDL_SetRenderDrawColor( gRenderer, 80, 80, 80, SDL_ALPHA_OPAQUE);
-
 		//Clear screen
+		SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
 		SDL_RenderClear( gRenderer );
 
-		//Render texture to screen
-		SDL_RenderCopy( gRenderer, loading, NULL, NULL );
+		if (loading.getTexture() == NULL)
+		{
+			printf("Texture is not in memory!\n");
+		}
+		else
+		{
+			//Render texture to screen
+			loading.render( gRenderer, 0, 0 );
+		}
+
+		SDL_SetRenderDrawColor( gRenderer, 80, 80, 80, SDL_ALPHA_OPAQUE);
 
 		SDL_RenderFillRect( gRenderer, &loadingBar );
 

@@ -16,10 +16,10 @@ int main(int argc, char** argv)
     SDL_Renderer* gRenderer = NULL;
 
     //Menu texture
-    SDL_Texture* menu = NULL;
+    LTexture menu;
 
 	//Laoding texture
-    SDL_Texture* loading = NULL;
+    LTexture loading;
 
 	//Start up SDL and create gWindow
 	if( !init( gWindow, gRenderer ) )
@@ -63,10 +63,11 @@ int main(int argc, char** argv)
 				}
 
 				//Clear screen
+				SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
 				SDL_RenderClear( gRenderer );
 
-				//Render texture to screen
-				SDL_RenderCopy( gRenderer, menu, NULL, NULL );
+				//Render menu texture to screen
+				menu.render( gRenderer, 0, 0 );
 
 				//Update screen
 				SDL_RenderPresent( gRenderer );
