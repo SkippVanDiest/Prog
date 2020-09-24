@@ -1,4 +1,4 @@
-#include "SDL.h"
+#include "SDL2/SDL.h"
 #include "monster.h"
 #include "plateau.h"
 #include "affichage.h"
@@ -17,6 +17,8 @@ int main(int argc, char **argv)
     bool uneFois = false;
     int reset = 0;
 
+    SDL_Window *window = NULL;
+
     corresCasePixel pos;
 
     TGrille tableau;
@@ -32,11 +34,6 @@ int main(int argc, char **argv)
     SDL_Event event;
     SDL_Event eventMenu;
 
-    SDL_Init(SDL_INIT_EVERYTHING); // Initialisation de la SDL.
-    screen=SDL_SetVideoMode(SCREEN_WIDTH,SCREEN_HEIGHT,SCREEN_BPP,SDL_SWSURFACE);
-
-
-
     SDL_Surface *fond = IMG_Load("background.bmp"); // Chargement de l'image de fond.
     SDL_Surface *chargement = IMG_Load("winSprite.bmp");
     SDL_Surface *final = IMG_Load("winEndSprite.bmp");
@@ -47,12 +44,18 @@ int main(int argc, char **argv)
 // --------------------------------------------- Fin de déclaration de variable --------------------------------------------- //
 // --------------------------------------------- Debut Initialisation ------------------------------------------------------- //
 
+    SDL_Init(SDL_INIT_EVERYTHING); // Initialisation de la SDL.
+
+    window = SDL_CreateWindow("Monster", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+
+    screen = SDL_GetWindowSurface(window);
+
     initMonster(monstre);
     initObstacle(o);
 
 
-    monstre.source = loadImageWithColorKey("sprite.bmp", 255,255,255);
-    o.source = loadImageWithColorKey("sprite.bmp", 255,255,255);
+    monstre.source = loadImageWithColorKey(screen, "sprite.bmp", 255,255,255);
+    o.source = loadImageWithColorKey(screen, "sprite.bmp", 255,255,255);
 
     initTableau(tableau);
     iniTabObstacle(tableau2);
@@ -62,7 +65,7 @@ int main(int argc, char **argv)
  // --------------------------------------------- Fin Initialisation ------------------------------------------------------- //
 
 
-    menuPrincipal(screen, eventMenu, quit);
+    menuPrincipal(window, screen, eventMenu, quit);
 
     while(!quit)
     {
@@ -157,13 +160,13 @@ int main(int argc, char **argv)
             if (fin == true) // ... Si c'est le cas, le booleen quit prend la valeur true
             {
                 applySurface(0,0,final,screen,NULL);
-                SDL_Flip(screen);
+                SDL_UpdateWindowSurface(window);
                 SDL_Delay(1000);
                 quit = true;
             }
 
 
-            SDL_Flip(screen); // Affichage de l'écran.
+            SDL_UpdateWindowSurface(window); // Affichage de l'écran.
 
 
 

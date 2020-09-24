@@ -13,7 +13,7 @@
 *********************** Sorties *****************************
 * Le Screen                                                 *
 ************************************************************/
-void menuPrincipal(SDL_Surface *screen, SDL_Event eventMenu, bool & quit)
+void menuPrincipal(SDL_Window *window, SDL_Surface *screen, SDL_Event eventMenu, bool & quit)
 {
 
 
@@ -55,7 +55,7 @@ void menuPrincipal(SDL_Surface *screen, SDL_Event eventMenu, bool & quit)
             }
         }
         applySurface(0, 0, menu, screen, NULL);
-        SDL_Flip(screen);
+        SDL_UpdateWindowSurface(window);
 
 
     }

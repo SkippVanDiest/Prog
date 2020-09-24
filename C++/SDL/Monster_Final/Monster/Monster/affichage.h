@@ -8,7 +8,7 @@
 
 // Fonction
 
-void menuPrincipal(SDL_Surface *screen, SDL_Event eventMenu, bool & quit);
+void menuPrincipal(SDL_Window *window, SDL_Surface *screen, SDL_Event eventMenu, bool & quit);
 
 
 #endif // AFFICHAGE_H

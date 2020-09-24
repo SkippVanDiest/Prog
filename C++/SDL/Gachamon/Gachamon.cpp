@@ -209,15 +209,8 @@ void loadGame( SDL_Renderer* gRenderer, LTexture &loading, SDL_Event e )
 		SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
 		SDL_RenderClear( gRenderer );
 
-		if (loading.getTexture() == NULL)
-		{
-			printf("Texture is not in memory!\n");
-		}
-		else
-		{
-			//Render texture to screen
-			loading.render( gRenderer, 0, 0 );
-		}
+		//Render texture to screen
+		loading.render( gRenderer, 0, 0 );
 
 		SDL_SetRenderDrawColor( gRenderer, 80, 80, 80, SDL_ALPHA_OPAQUE);
 

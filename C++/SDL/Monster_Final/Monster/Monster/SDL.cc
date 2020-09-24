@@ -13,7 +13,7 @@
 *********************** Sorties *****************************
 * Retourne l'image de façon optimisée                       *
 ************************************************************/
-SDL_Surface *load_image( string filename )
+SDL_Surface *load_image( SDL_Surface *screen, string filename )
 {
     //Temporary storage for the image that's loaded
     SDL_Surface* loadedImage = NULL;
@@ -26,7 +26,7 @@ SDL_Surface *load_image( string filename )
     if( loadedImage != NULL )
     {
         //Create an optimized image
-        optimizedImage = SDL_DisplayFormat( loadedImage );
+        optimizedImage = SDL_ConvertSurface( loadedImage, screen->format, 0);
 
         //Free the old image
         SDL_FreeSurface( loadedImage );
@@ -48,7 +48,7 @@ SDL_Surface *load_image( string filename )
 *********************** Sorties *****************************
 *                         //                                *
 ************************************************************/
-SDL_Surface *loadImageWithColorKey(string filename, int r, int g, int b)
+SDL_Surface *loadImageWithColorKey(SDL_Surface *screen, string filename, int r, int g, int b)
 {
     //The image that's loaded
     SDL_Surface* loadedImage = NULL;
@@ -63,7 +63,7 @@ SDL_Surface *loadImageWithColorKey(string filename, int r, int g, int b)
     if( loadedImage != NULL )
     {
         //Create an optimized image
-        optimizedImage = SDL_DisplayFormat( loadedImage );
+        optimizedImage = SDL_ConvertSurface( loadedImage, screen->format, 0 );
 
         //Free the old image
         SDL_FreeSurface( loadedImage );
@@ -75,7 +75,7 @@ SDL_Surface *loadImageWithColorKey(string filename, int r, int g, int b)
             Uint32 colorkey = SDL_MapRGB( optimizedImage->format, r, g, b );
 
             //Set all pixels of color R 0, G 0xFF, B 0xFF to be transparent
-            SDL_SetColorKey( optimizedImage, SDL_SRCCOLORKEY, colorkey );
+            SDL_SetColorKey( optimizedImage, SDL_TRUE, colorkey );
         }
 
 
