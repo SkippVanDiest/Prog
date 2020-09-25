@@ -145,15 +145,15 @@ bool init( SDL_Window* gWindow, SDL_Renderer* &gRenderer )
 	return success;
 }
 
-bool loadMedia( SDL_Renderer* gRenderer, LTexture &menu, LTexture &loading )
+bool loadMedia( SDL_Renderer* gRenderer, LTexture &intro, LTexture &loading, LTexture &menu )
 {
 	//Loading success flag
 	bool success = true;
 
-	//Load menu texture
-	if( !menu.loadFromFile( gRenderer, "images/screen1.jpg" ) )
+	//Load intro texture
+	if( !intro.loadFromFile( gRenderer, "images/intro.jpg" ) )
 	{
-		printf( "Failed to load menu texture image!\n" );
+		printf( "Failed to load intro texture image!\n" );
 		success = false;
 	}
 
@@ -164,14 +164,22 @@ bool loadMedia( SDL_Renderer* gRenderer, LTexture &menu, LTexture &loading )
 		success = false;
 	}
 
+	//Load menutexture
+	if( !menu.loadFromFile( gRenderer, "images/menu.jpg" ) )
+	{
+		printf( "Failed to load menu texture image!\n" );
+		success = false;
+	}
+
 	return success;
 }
 
-void close( SDL_Window* gWindow, SDL_Renderer* gRenderer, LTexture menu, LTexture loading )
+void close( SDL_Window* gWindow, SDL_Renderer* gRenderer, LTexture intro, LTexture loading, LTexture menu )
 {
 	//Free loaded images
-	loading.free();
 	menu.free();
+	loading.free();
+	intro.free();
 
 	//Destroy window	
 	SDL_DestroyRenderer( gRenderer );
@@ -229,4 +237,35 @@ void loadGame( SDL_Renderer* gRenderer, LTexture &loading, SDL_Event e )
 		SDL_Delay(1000);
 	}
 	
+}
+
+void gameMenu( SDL_Renderer* gRenderer, LTexture &menu, SDL_Event e )
+{
+	bool quitGame = false;
+
+	//While application is running
+	while( !quitGame )
+	{
+		//Handle events on queue
+		while( SDL_PollEvent( &e ) != 0 )
+		{
+			switch (e.type)
+			{
+				//User requests quit
+				case SDL_QUIT:
+					quitGame = true;
+					break;
+			}
+		}
+
+		//Clear screen
+		SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+		SDL_RenderClear( gRenderer );
+
+		//Render texture to screen
+		menu.render( gRenderer, 0, 0 );
+
+		//Update screen
+		SDL_RenderPresent( gRenderer );
+	}
 }
