@@ -192,7 +192,7 @@ void close( SDL_Window* gWindow, SDL_Renderer* gRenderer, LTexture intro, LTextu
 	SDL_Quit();
 }
 
-void loadGame( SDL_Renderer* gRenderer, LTexture &loading, SDL_Event e )
+bool loadGame( SDL_Renderer* gRenderer, LTexture &loading, SDL_Event e )
 {
 	SDL_Rect loadingBar = {240, 650, 0, 30};
 
@@ -236,6 +236,8 @@ void loadGame( SDL_Renderer* gRenderer, LTexture &loading, SDL_Event e )
 	{
 		SDL_Delay(1000);
 	}
+
+	return quitGame;
 	
 }
 

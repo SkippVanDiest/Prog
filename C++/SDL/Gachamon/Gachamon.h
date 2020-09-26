@@ -59,7 +59,7 @@ bool loadMedia( SDL_Renderer* gRenderer, LTexture &intro, LTexture &loading, LTe
 void close( SDL_Window* gWindow, SDL_Renderer* gRenderer, LTexture intro, LTexture loading, LTexture menu );
 
 //Loading screen
-void loadGame( SDL_Renderer* gRenderer, LTexture &loading, SDL_Event e );
+bool loadGame( SDL_Renderer* gRenderer, LTexture &loading, SDL_Event e );
 
 //Game menu
 void gameMenu( SDL_Renderer* gRenderer, LTexture &menu, SDL_Event e );

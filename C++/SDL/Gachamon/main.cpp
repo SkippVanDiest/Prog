@@ -58,8 +58,10 @@ int main(int argc, char** argv)
 						case SDL_MOUSEBUTTONDOWN:
 							if (e.button.button == SDL_BUTTON_LEFT)
 							{
-								loadGame( gRenderer, loading, e);
-								gameMenu( gRenderer, menu, e );
+								if(!loadGame( gRenderer, loading, e));
+								{
+									gameMenu( gRenderer, menu, e );
+								}
 							}
 						break;
 					}
