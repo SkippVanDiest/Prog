@@ -15,11 +15,14 @@ int main(int argc, char** argv)
     //The window renderer
     SDL_Renderer* gRenderer = NULL;
 
-    //Menu texture
-    LTexture menu;
+    //Intro texture
+    LTexture intro;
 
 	//Laoding texture
     LTexture loading;
+
+	//Menu texture
+	LTexture menu;
 
 	//Start up SDL and create gWindow
 	if( !init( gWindow, gRenderer ) )
@@ -29,7 +32,7 @@ int main(int argc, char** argv)
 	else
 	{	
 		//Load media
-		if( !loadMedia( gRenderer, menu, loading ) )
+		if( !loadMedia( gRenderer, intro, loading, menu ) )
 		{
 			printf( "Failed to load media!\n" );
 		}
@@ -56,7 +59,10 @@ int main(int argc, char** argv)
 						case SDL_MOUSEBUTTONDOWN:
 							if (e.button.button == SDL_BUTTON_LEFT)
 							{
-								loadGame( gRenderer, loading, e);
+								if(!loadMenu( gRenderer, loading, e))
+								{
+									gameMenu( gRenderer, menu, e);
+								}
 							}
 						break;
 					}
@@ -66,8 +72,8 @@ int main(int argc, char** argv)
 				SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
 				SDL_RenderClear( gRenderer );
 
-				//Render menu texture to screen
-				menu.render( gRenderer, 0, 0 );
+				//Render intro texture to screen
+				intro.render( gRenderer, 0, 0 );
 
 				//Update screen
 				SDL_RenderPresent( gRenderer );
@@ -76,7 +82,7 @@ int main(int argc, char** argv)
 	}
 
 	//Free resources and close SDL
-	close( gWindow, gRenderer, menu, loading);
+	close( gWindow, gRenderer, intro, loading, menu);
 
 	return 0;
 }
