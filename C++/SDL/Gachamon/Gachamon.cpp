@@ -151,7 +151,7 @@ bool loadMedia( SDL_Renderer* gRenderer, LTexture &intro, LTexture &loading, LTe
 	bool success = true;
 
 	//Load intro texture
-	if( !intro.loadFromFile( gRenderer, "images/screen1.jpg" ) )
+	if( !intro.loadFromFile( gRenderer, "images/intro.jpg" ) )
 	{
 		printf( "Failed to load intro texture image!\n" );
 		success = false;
@@ -165,7 +165,7 @@ bool loadMedia( SDL_Renderer* gRenderer, LTexture &intro, LTexture &loading, LTe
 	}
 
 	//Load loading texture
-	if( !menu.loadFromFile( gRenderer, "images/evanLiaw_pokecenter_4.jpg" ) )
+	if( !menu.loadFromFile( gRenderer, "images/menu.jpg" ) )
 	{
 		printf( "Failed to load menu texture image!\n" );
 		success = false;
@@ -180,6 +180,8 @@ void close( SDL_Window* gWindow, SDL_Renderer* gRenderer, LTexture &intro, LText
 	loading.free();
 	intro.free();
 	menu.free();
+	loading.free();
+	intro.free();
 
 	//Destroy window	
 	SDL_DestroyRenderer( gRenderer );
@@ -265,7 +267,7 @@ void gameMenu(SDL_Renderer* gRenderer, LTexture &menu, SDL_Event e)
 		SDL_RenderClear( gRenderer );
 
 		//Render texture to screen
-		menu.render( gRenderer, -340, -120 );
+		menu.render( gRenderer, 0, 0 );
 
 		//Update screen
 		SDL_RenderPresent( gRenderer );
